@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card">
+    <h2>Dashboard</h2>
+    <div id="user">Checking...</div>
+    <button id="logout">Logout</button>
+    <p id="protected"></p>
+    <p><a href="index.html">Home</a></p>
+  </main>
+
+  <script>
+    async function load() {
+      const r = await fetch('/api/me');
+      const j = await r.json();
+      if (j.username) {
+        document.getElementById('user').textContent = 'Hello, ' + j.username;
+        // fetch protected message
+        const p = await fetch('/api/profile');
+        if (p.ok) {
+          const pj = await p.json();
+          document.getElementById('protected').textContent = pj.message;
+        } else {
+          document.getElementById('protected').textContent = 'Protected content: login required.';
+        }
+      } else {
+        document.getElementById('user').textContent = 'Not logged in. Please login.';
+      }
+    }
+
+    document.getElementById('logout').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      location.href = '/';
+    });
+
+    load();
+  </script>
+</body>
+</html>
