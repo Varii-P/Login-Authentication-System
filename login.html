@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Username <input name="username" required></label>
+      <label>Password <input name="password" type="password" required></label>
+      <button type="submit">Login</button>
+    </form>
+    <p id="msg"></p>
+    <p><a href="register.html">Create an account</a></p>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const msg = document.getElementById('msg');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      msg.textContent = 'Logging in...';
+      const fd = new FormData(form);
+      const data = { username: fd.get('username'), password: fd.get('password') };
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const j = await res.json();
+        if (res.ok) {
+          msg.textContent = 'Logged in! Redirecting...';
+          setTimeout(() => location.href = '/dashboard.html', 500);
+        } else {
+          msg.textContent = j.error || 'Login failed';
+        }
+      } catch (err) {
+        msg.textContent = 'Network error';
+      }
+    });
+  </script>
+</body>
+</html>
